@@ -1,0 +1,20 @@
+{
+  "familia": {
+    "nomePai": "Carlos",
+    "nomeMae": "Ana",
+    "nomeBebe": "Pedro"
+  },
+  "itens": [
+    {
+      "cat": "Roupas",
+      "nome": "Macacão",
+      "qtd": 3,
+      "valor": 29.9,
+      "link": "",
+      "id": "fe810c56-87fd-491b-8bdd-10f3b4c079d3",
+      "comprado": false
+    }
+  ],
+  "registros": [],
+  "fotos": []
+}

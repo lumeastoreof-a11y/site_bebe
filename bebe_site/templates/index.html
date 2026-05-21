@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ data.familia.nomeBebe or 'Nosso Bebê' }} — Chegando!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --rose:    #e8a4b8;
+  --rose-lt: #f7e8ef;
+  --rose-dk: #c47a96;
+  --mint:    #a8d5c2;
+  --mint-lt: #e8f5f0;
+  --cream:   #fdf8f5;
+  --sand:    #f0e6da;
+  --text:    #3a2d35;
+  --muted:   #8a7580;
+  --white:   #ffffff;
+  --radius:  14px;
+  --shadow:  0 4px 24px rgba(58,45,53,.08);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; }
+
+/* ── hero ── */
+.hero {
+  background: linear-gradient(135deg, #f9eef3 0%, #edf6f1 100%);
+  border-bottom: 1px solid #eedde8;
+  padding: 2.5rem 1.5rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 60% 80% at 20% 50%, rgba(232,164,184,.2), transparent),
+              radial-gradient(ellipse 50% 60% at 80% 30%, rgba(168,213,194,.2), transparent);
+  pointer-events: none;
+}
+.hero-emoji { font-size: 3rem; line-height: 1; margin-bottom: .75rem; }
+.hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 600; color: var(--text); margin-bottom: .4rem; }
+.hero .subtitle { font-size: .9rem; color: var(--muted); letter-spacing: .03em; }
+.hero .parents { margin-top: .5rem; font-size: .85rem; color: var(--rose-dk); font-weight: 500; }
+
+/* ── nav tabs ── */
+.nav { display: flex; gap: .5rem; padding: 1rem 1.5rem .5rem; flex-wrap: wrap; border-bottom: 1px solid var(--sand); background: var(--white); position: sticky; top: 0; z-index: 100; }
+.nav button {
+  padding: .5rem 1.1rem; border: 1.5px solid transparent; border-radius: 100px;
+  background: none; font-family: 'DM Sans', sans-serif; font-size: .85rem; font-weight: 500;
+  color: var(--muted); cursor: pointer; transition: all .2s;
+}
+.nav button:hover { background: var(--rose-lt); color: var(--rose-dk); }
+.nav button.active { background: var(--rose); color: var(--white); border-color: var(--rose); }
+
+/* ── layout ── */
+.container { max-width: 860px; margin: 0 auto; padding: 1.5rem; }
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* ── card ── */
+.card {
+  background: var(--white); border-radius: var(--radius);
+  border: 1px solid #eedde8; box-shadow: var(--shadow);
+  padding: 1.5rem; margin-bottom: 1.25rem;
+}
+.card h2 { font-family: 'Playfair Display', serif; font-size: 1.25rem; margin-bottom: 1.1rem; color: var(--text); }
+.card h3 { font-size: 1rem; font-weight: 500; margin-bottom: .9rem; color: var(--text); }
+
+/* ── forms ── */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem; }
+@media(max-width: 520px) { .grid2 { grid-template-columns: 1fr; } }
+.field { display: flex; flex-direction: column; gap: .35rem; }
+.field label { font-size: .8rem; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.field input, .field select, .field textarea {
+  padding: .6rem .85rem; border: 1.5px solid #e4d4dc; border-radius: 9px;
+  background: var(--cream); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: .9rem;
+  transition: border-color .2s;
+}
+.field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--rose); background: var(--white); }
+.field textarea { resize: vertical; min-height: 75px; }
+
+/* ── buttons ── */
+.btn { padding: .55rem 1.2rem; border-radius: 100px; border: none; font-family: 'DM Sans', sans-serif; font-size: .875rem; font-weight: 500; cursor: pointer; transition: all .2s; }
+.btn-rose { background: var(--rose); color: var(--white); }
+.btn-rose:hover { background: var(--rose-dk); }
+.btn-ghost { background: none; border: 1.5px solid #e4d4dc; color: var(--muted); }
+.btn-ghost:hover { border-color: var(--rose); color: var(--rose-dk); }
+.btn-sm { padding: .3rem .75rem; font-size: .78rem; }
+.btn-danger { background: #fce8e8; color: #b94a4a; }
+
+/* ── métricas ── */
+.metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: .9rem; margin-bottom: 1.25rem; }
+@media(max-width: 460px) { .metrics { grid-template-columns: 1fr; } }
+.metric { background: var(--white); border: 1px solid #eedde8; border-radius: var(--radius); padding: 1.1rem; text-align: center; box-shadow: var(--shadow); }
+.metric .mlabel { font-size: .75rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: .3rem; }
+.metric .mvalue { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--rose-dk); }
+
+/* ── tabela enxoval ── */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .85rem; }
+th { text-align: left; padding: .6rem .75rem; border-bottom: 2px solid var(--sand); font-size: .75rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 500; }
+td { padding: .55rem .75rem; border-bottom: 1px solid var(--sand); vertical-align: middle; }
+td input[type=text], td input[type=number], td input[type=url] {
+  border: 1px solid #e4d4dc; border-radius: 7px; padding: .3rem .6rem;
+  background: var(--cream); font-family: 'DM Sans', sans-serif; font-size: .83rem; color: var(--text);
+}
+tr.comprado td { opacity: .45; text-decoration: line-through; }
+.cat-chip {
+  display: inline-block; padding: .2rem .75rem; border-radius: 100px;
+  font-size: .73rem; font-weight: 500; background: var(--rose-lt); color: var(--rose-dk);
+}
+
+/* ── add row ── */
+.add-row { background: var(--mint-lt); border: 1px solid #c8e8da; border-radius: 11px; padding: 1rem; margin-bottom: 1.1rem; }
+.add-row-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: .75rem; margin-bottom: .75rem; }
+.add-row .field label { color: #4a7a6a; }
+.add-row .field input, .add-row .field select { background: var(--white); border-color: #b0d8c8; }
+
+/* ── progresso gravidez ── */
+.prog-wrap { background: var(--sand); border-radius: 100px; height: 12px; overflow: hidden; margin: .75rem 0; }
+.prog-fill { height: 100%; background: linear-gradient(90deg, var(--rose), var(--mint)); border-radius: 100px; transition: width .6s cubic-bezier(.4,0,.2,1); }
+.week-badge { display: inline-flex; align-items: center; gap: .5rem; background: var(--rose-lt); color: var(--rose-dk); border-radius: 100px; padding: .4rem 1rem; font-size: .9rem; font-weight: 500; margin-bottom: .75rem; }
+.reg-item { display: flex; gap: .75rem; align-items: flex-start; padding: .75rem 0; border-bottom: 1px solid var(--sand); }
+.reg-sem { background: var(--rose-lt); color: var(--rose-dk); border-radius: 8px; padding: .2rem .7rem; font-size: .8rem; font-weight: 600; white-space: nowrap; }
+
+/* ── álbum fotos ── */
+.photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: .75rem; }
+.photo-card { border-radius: 11px; overflow: hidden; border: 1px solid #eedde8; background: var(--white); box-shadow: var(--shadow); }
+.photo-card img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; }
+.photo-meta { padding: .5rem .7rem; }
+.photo-fase { font-size: .75rem; font-weight: 600; color: var(--rose-dk); }
+.photo-desc { font-size: .75rem; color: var(--muted); }
+.empty-state { text-align: center; padding: 2.5rem; color: var(--muted); font-size: .9rem; }
+.empty-state .es-icon { font-size: 2.5rem; margin-bottom: .5rem; }
+
+/* ── toast ── */
+.toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--text); color: var(--white); padding: .75rem 1.25rem; border-radius: 11px; font-size: .85rem; opacity: 0; transform: translateY(10px); transition: all .3s; z-index: 9999; pointer-events: none; }
+.toast.show { opacity: 1; transform: translateY(0); }
+.link-ext { color: var(--rose-dk); font-size: .8rem; text-decoration: none; }
+.link-ext:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-emoji" id="heroEmoji">👶</div>
+  <h1 id="heroTitle">{{ data.familia.nomeBebe or 'Nosso Bebê' }} está chegando!</h1>
+  <div class="subtitle" id="heroSub">
+    {% if data.familia.previsaoNasc %}
+      Previsão: {{ data.familia.previsaoNasc }}
+    {% else %}
+      Preencha as informações da família
+    {% endif %}
+  </div>
+  <div class="parents" id="heroPais">
+    {% if data.familia.nomePai and data.familia.nomeMae %}
+      ♥ {{ data.familia.nomePai }} &amp; {{ data.familia.nomeMae }}
+    {% endif %}
+  </div>
+</div>
+
+<nav class="nav">
+  <button class="active" onclick="switchTab('familia', this)">❤️ Família</button>
+  <button onclick="switchTab('gravidez', this)">🤰 Gravidez</button>
+  <button onclick="switchTab('enxoval', this)">🛍️ Enxoval</button>
+  <button onclick="switchTab('fotos', this)">📷 Álbum</button>
+</nav>
+
+<div class="container">
+
+  <!-- ── FAMÍLIA ── -->
+  <div id="panel-familia" class="panel active">
+    <div class="card">
+      <h2>Informações da família</h2>
+      <div class="grid2">
+        <div class="field"><label>Nome do pai</label><input id="nomePai" value="{{ data.familia.nomePai or '' }}" placeholder="Ex: Carlos"></div>
+        <div class="field"><label>Nome da mãe</label><input id="nomeMae" value="{{ data.familia.nomeMae or '' }}" placeholder="Ex: Ana"></div>
+        <div class="field"><label>Nome do bebê</label><input id="nomeBebe" value="{{ data.familia.nomeBebe or '' }}" placeholder="Ex: Pedro, ou a escolher..."></div>
+        <div class="field"><label>Previsão de nascimento</label><input type="date" id="previsaoNasc" value="{{ data.familia.previsaoNasc or '' }}"></div>
+        <div class="field"><label>Início da gravidez</label><input type="date" id="inicioGrav" value="{{ data.familia.inicioGrav or '' }}"></div>
+        <div class="field"><label>Sexo do bebê</label>
+          <select id="sexoBebe">
+            <option value="surpresa" {% if data.familia.sexoBebe == 'surpresa' %}selected{% endif %}>Surpresa 🎁</option>
+            <option value="menino" {% if data.familia.sexoBebe == 'menino' %}selected{% endif %}>Menino 💙</option>
+            <option value="menina" {% if data.familia.sexoBebe == 'menina' %}selected{% endif %}>Menina 💗</option>
+          </select>
+        </div>
+      </div>
+      <div class="field" style="margin-top:.9rem">
+        <label>Mensagem especial</label>
+        <textarea id="mensagem" placeholder="Uma mensagem de amor para o bebê...">{{ data.familia.mensagem or '' }}</textarea>
+      </div>
+      {% if data.familia.mensagem %}
+      <blockquote style="margin-top:1rem;padding:.75rem 1rem;border-left:3px solid var(--rose);color:var(--muted);font-style:italic;font-size:.9rem">
+        "{{ data.familia.mensagem }}"
+      </blockquote>
+      {% endif %}
+      <div style="text-align:right;margin-top:1rem">
+        <button class="btn btn-rose" onclick="salvarFamilia()">Salvar informações</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── GRAVIDEZ ── -->
+  <div id="panel-gravidez" class="panel">
+    <div class="card" id="cardGravidez">
+      <h2>Evolução da gravidez</h2>
+      <div id="gravidezContent">
+        <p style="color:var(--muted);font-size:.9rem">Preencha as datas na aba Família para ver a evolução.</p>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Diário da gravidez</h3>
+      <div class="add-row">
+        <div class="add-row-grid">
+          <div class="field"><label>Semana</label><input type="number" id="regSemana" placeholder="Ex: 20" style="width:90px"></div>
+          <div class="field" style="grid-column: span 2"><label>Anotação</label><input id="regNota" placeholder="Ex: Primeiro chute, consulta com Dr. Silva..."></div>
+        </div>
+        <button class="btn btn-rose btn-sm" onclick="addRegistro()">+ Adicionar</button>
+      </div>
+      <div id="registrosList">
+        {% for r in data.registros %}
+        <div class="reg-item" id="reg-{{ r.id }}">
+          <span class="reg-sem">Sem. {{ r.sem or '—' }}</span>
+          <span style="flex:1;font-size:.88rem">{{ r.nota }}</span>
+          <span style="font-size:.75rem;color:var(--muted)">{{ r.data }}</span>
+          <button class="btn btn-danger btn-sm" onclick="delRegistro('{{ r.id }}')">✕</button>
+        </div>
+        {% else %}
+        <p id="emptyReg" class="empty-state"><span class="es-icon">📝</span><br>Nenhuma anotação ainda.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ENXOVAL ── -->
+  <div id="panel-enxoval" class="panel">
+    <div class="metrics">
+      <div class="metric"><div class="mlabel">Total de itens</div><div class="mvalue" id="mTotal">{{ data.itens|length }}</div></div>
+      <div class="metric"><div class="mlabel">Comprados</div><div class="mvalue" id="mComprados">{{ data.itens|selectattr('comprado')|list|length }}</div></div>
+      <div class="metric"><div class="mlabel">Valor total</div><div class="mvalue" id="mValor">R$ {{ "%.2f"|format(data.itens|sum(attribute='valor') if data.itens else 0) }}</div></div>
+    </div>
+    <div class="card">
+      <h3>Adicionar item</h3>
+      <div class="add-row">
+        <div class="add-row-grid">
+          <div class="field"><label>Categoria</label>
+            <select id="itemCat">
+              <option>Roupas</option><option>Higiene</option><option>Quarto</option>
+              <option>Alimentação</option><option>Saúde</option><option>Passeio</option>
+              <option>Brinquedos</option><option>Outros</option>
+            </select>
+          </div>
+          <div class="field"><label>Nome do item</label><input id="itemNome" placeholder="Ex: Macacão manga longa"></div>
+          <div class="field"><label>Qtd</label><input type="number" id="itemQtd" value="1" min="1" style="width:70px"></div>
+          <div class="field"><label>Valor unitário (R$)</label><input type="number" id="itemValor" placeholder="0.00" step="0.01"></div>
+          <div class="field" style="grid-column:span 2"><label>Link do melhor preço</label><input type="url" id="itemLink" placeholder="https://..."></div>
+        </div>
+        <button class="btn btn-rose btn-sm" onclick="addItem()">+ Adicionar item</button>
+      </div>
+    </div>
+    <div id="enxovalLista">
+      {% set cats = data.itens|map(attribute='cat')|unique|list %}
+      {% for cat in cats %}
+        {% set cat_itens = data.itens|selectattr('cat', 'equalto', cat)|list %}
+        <div class="card" id="cat-{{ loop.index }}">
+          <h3><span class="cat-chip">{{ cat }}</span></h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th></th><th>Item</th><th>Qtd</th><th>Valor unit.</th><th>Link</th><th></th></tr></thead>
+              <tbody>
+              {% for it in cat_itens %}
+              <tr id="row-{{ it.id }}" class="{{ 'comprado' if it.comprado else '' }}">
+                <td><input type="checkbox" onchange="toggleItem('{{ it.id }}', this)" {{ 'checked' if it.comprado }} style="accent-color:var(--rose);width:16px;height:16px;cursor:pointer"></td>
+                <td><input type="text" value="{{ it.nome }}" onchange="updateItem('{{ it.id }}','nome',this.value)" style="width:140px"></td>
+                <td><input type="number" value="{{ it.qtd }}" min="1" onchange="updateItem('{{ it.id }}','qtd',parseFloat(this.value))" style="width:55px"></td>
+                <td><input type="number" value="{{ it.valor }}" step="0.01" onchange="updateItem('{{ it.id }}','valor',parseFloat(this.value))" style="width:90px"></td>
+                <td>{% if it.link %}<a href="{{ it.link }}" class="link-ext" target="_blank">🔗 Ver</a>{% else %}—{% endif %}</td>
+                <td><button class="btn btn-danger btn-sm" onclick="delItem('{{ it.id }}')">✕</button></td>
+              </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      {% else %}
+        <div class="empty-state"><span class="es-icon">🛍️</span><br>Adicione o primeiro item do enxoval!</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- ── ÁLBUM ── -->
+  <div id="panel-fotos" class="panel">
+    <div class="card">
+      <h3>Adicionar foto</h3>
+      <div class="add-row">
+        <div class="add-row-grid">
+          <div class="field"><label>Fase</label>
+            <select id="fotoFase">
+              <option>Gravidez</option><option>Chá de bebê</option><option>Maternidade</option>
+              <option>1º mês</option><option>2º mês</option><option>3º mês</option>
+              <option>6 meses</option><option>1 ano</option><option>Outros</option>
+            </select>
+          </div>
+          <div class="field"><label>Descrição</label><input id="fotoDesc" placeholder="Ex: Primeiro ultrassom, 12 semanas..."></div>
+          <div class="field"><label>Escolher foto</label><input type="file" id="fotoFile" accept="image/*"></div>
+        </div>
+        <button class="btn btn-rose btn-sm" onclick="addFoto()">+ Adicionar foto</button>
+      </div>
+      <div class="photo-grid" id="photoGrid">
+        {% for f in data.fotos %}
+        <div class="photo-card" id="foto-{{ f.id }}">
+          <img src="{{ f.src }}" alt="{{ f.desc or f.fase }}">
+          <div class="photo-meta">
+            <div class="photo-fase">{{ f.fase }}</div>
+            <div class="photo-desc">{{ f.desc or '' }}</div>
+            <div style="font-size:.7rem;color:var(--muted)">{{ f.data }}</div>
+            <button class="btn btn-danger btn-sm" style="margin-top:.4rem" onclick="delFoto('{{ f.id }}')">✕ Remover</button>
+          </div>
+        </div>
+        {% else %}
+        <div id="emptyFotos" class="empty-state" style="grid-column:1/-1">
+          <span class="es-icon">📷</span><br>Nenhuma foto ainda. Adicione a primeira memória!
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── tabs ──
+function switchTab(name, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'gravidez') updateGravidez();
+}
+
+// ── toast ──
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ── família ──
+function salvarFamilia() {
+  const body = {
+    nomePai: val('nomePai'), nomeMae: val('nomeMae'), nomeBebe: val('nomeBebe'),
+    previsaoNasc: val('previsaoNasc'), inicioGrav: val('inicioGrav'),
+    sexoBebe: val('sexoBebe'), mensagem: val('mensagem')
+  };
+  fetch('/api/familia', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)})
+    .then(() => { toast('✅ Informações salvas!'); updateHero(body); updateGravidez(); });
+}
+
+function val(id) { const e = document.getElementById(id); return e ? e.value : ''; }
+
+function updateHero(f) {
+  f = f || {};
+  const sx = f.sexoBebe || val('sexoBebe');
+  const emoji = sx === 'menino' ? '💙' : sx === 'menina' ? '💗' : '👶';
+  document.getElementById('heroEmoji').textContent = emoji;
+  const bebe = f.nomeBebe || val('nomeBebe') || 'Nosso Bebê';
+  document.getElementById('heroTitle').textContent = bebe + ' está chegando!';
+  const prev = f.previsaoNasc || val('previsaoNasc');
+  document.getElementById('heroSub').textContent = prev ? 'Previsão: ' + prev : '';
+  const pai = f.nomePai || val('nomePai'), mae = f.nomeMae || val('nomeMae');
+  document.getElementById('heroPais').textContent = (pai && mae) ? '♥ ' + pai + ' & ' + mae : '';
+}
+
+// ── gravidez ──
+function updateGravidez() {
+  const inicio = val('inicioGrav');
+  const prev = val('previsaoNasc');
+  const el = document.getElementById('gravidezContent');
+  if (!inicio) { el.innerHTML = '<p style="color:var(--muted)">Preencha a data de início na aba Família.</p>'; return; }
+  const now = new Date();
+  const start = new Date(inicio + 'T12:00:00');
+  const dias = Math.floor((now - start) / 86400000);
+  const semanas = Math.floor(dias / 7);
+  const extra = dias % 7;
+  const pct = Math.min(100, Math.round(semanas / 40 * 100));
+  const fase = semanas < 13 ? '1º Trimestre — Formação dos órgãos' : semanas < 28 ? '2º Trimestre — Crescimento e movimentos' : '3º Trimestre — Amadurecimento e chegada!';
+  let falta = '';
+  if (prev) {
+    const dp = new Date(prev + 'T12:00:00');
+    const df = Math.ceil((dp - now) / 86400000);
+    falta = df > 0 ? `<p style="color:var(--muted);font-size:.88rem;margin-top:.5rem">Faltam <strong>${df}</strong> dias para a chegada! 🎉</p>` : `<p style="color:#3a9a6a;font-weight:600;margin-top:.5rem">🎉 Bebê chegou!</p>`;
+  }
+  el.innerHTML = `
+    <div class="week-badge">🗓️ Semana ${semanas}, ${extra} dia${extra !== 1 ? 's' : ''}</div>
+    <p style="font-size:.85rem;color:var(--muted)">${fase}</p>
+    <div class="prog-wrap"><div class="prog-fill" style="width:${pct}%"></div></div>
+    <div style="display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted)"><span>Semana 0</span><span>${pct}%</span><span>Semana 40</span></div>
+    ${falta}`;
+}
+
+// ── registros ──
+function addRegistro() {
+  const sem = val('regSemana'), nota = val('regNota').trim();
+  if (!nota) return;
+  fetch('/api/registros', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({sem, nota})})
+    .then(r => r.json()).then(d => {
+      const r = d.registro;
+      document.getElementById('emptyReg')?.remove();
+      const div = document.createElement('div');
+      div.className = 'reg-item'; div.id = 'reg-' + r.id;
+      div.innerHTML = `<span class="reg-sem">Sem. ${r.sem||'—'}</span><span style="flex:1;font-size:.88rem">${r.nota}</span><span style="font-size:.75rem;color:var(--muted)">${r.data}</span><button class="btn btn-danger btn-sm" onclick="delRegistro('${r.id}')">✕</button>`;
+      document.getElementById('registrosList').appendChild(div);
+      document.getElementById('regSemana').value = '';
+      document.getElementById('regNota').value = '';
+      toast('📝 Anotação salva!');
+    });
+}
+
+function delRegistro(id) {
+  fetch('/api/registros/' + id, {method:'DELETE'}).then(() => {
+    document.getElementById('reg-' + id)?.remove(); toast('Removido.');
+  });
+}
+
+// ── enxoval ──
+function addItem() {
+  const nome = val('itemNome').trim();
+  if (!nome) return;
+  const item = {cat: val('itemCat'), nome, qtd: parseFloat(val('itemQtd'))||1, valor: parseFloat(document.getElementById('itemValor').value)||0, link: val('itemLink')};
+  fetch('/api/itens', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(item)})
+    .then(r => r.json()).then(() => { toast('✅ Item adicionado! Recarregando...'); setTimeout(() => location.reload(), 800); });
+}
+
+function toggleItem(id, cb) {
+  fetch('/api/itens/' + id, {method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({comprado: cb.checked})})
+    .then(() => {
+      const row = document.getElementById('row-' + id);
+      if (cb.checked) row.classList.add('comprado'); else row.classList.remove('comprado');
+      updateMetrics();
+    });
+}
+
+function updateItem(id, field, val) {
+  const body = {}; body[field] = val;
+  fetch('/api/itens/' + id, {method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)})
+    .then(() => updateMetrics());
+}
+
+function delItem(id) {
+  fetch('/api/itens/' + id, {method:'DELETE'}).then(() => {
+    document.getElementById('row-' + id)?.remove(); updateMetrics(); toast('Removido.');
+  });
+}
+
+function updateMetrics() {
+  const rows = document.querySelectorAll('tr[id^="row-"]');
+  let total = rows.length, comprados = 0, valor = 0;
+  rows.forEach(row => {
+    if (row.classList.contains('comprado')) comprados++;
+    const inputs = row.querySelectorAll('input[type=number]');
+    if (inputs.length >= 2) valor += (parseFloat(inputs[0].value)||0) * (parseFloat(inputs[1].value)||0);
+  });
+  document.getElementById('mTotal').textContent = total;
+  document.getElementById('mComprados').textContent = comprados;
+  document.getElementById('mValor').textContent = 'R$ ' + valor.toLocaleString('pt-BR', {minimumFractionDigits:2});
+}
+
+// ── fotos ──
+function addFoto() {
+  const file = document.getElementById('fotoFile').files[0];
+  if (!file) { toast('Selecione uma foto primeiro.'); return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    const body = {fase: val('fotoFase'), desc: val('fotoDesc'), src: e.target.result};
+    fetch('/api/fotos', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)})
+      .then(r => r.json()).then(d => {
+        document.getElementById('emptyFotos')?.remove();
+        const f = d.foto;
+        const div = document.createElement('div');
+        div.className = 'photo-card'; div.id = 'foto-' + f.id;
+        div.innerHTML = `<img src="${f.src}" alt="${f.desc||f.fase}"><div class="photo-meta"><div class="photo-fase">${f.fase}</div><div class="photo-desc">${f.desc||''}</div><div style="font-size:.7rem;color:var(--muted)">${f.data}</div><button class="btn btn-danger btn-sm" style="margin-top:.4rem" onclick="delFoto('${f.id}')">✕ Remover</button></div>`;
+        document.getElementById('photoGrid').appendChild(div);
+        document.getElementById('fotoFile').value = '';
+        document.getElementById('fotoDesc').value = '';
+        toast('📷 Foto adicionada!');
+      });
+  };
+  reader.readAsDataURL(file);
+}
+
+function delFoto(id) {
+  fetch('/api/fotos/' + id, {method:'DELETE'}).then(() => {
+    document.getElementById('foto-' + id)?.remove(); toast('Foto removida.');
+  });
+}
+
+updateGravidez();
+</script>
+</body>
+</html>
